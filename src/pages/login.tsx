@@ -1,10 +1,12 @@
 import { useState } from "react";
-import Link from "next/link";  // Import Link from Next.js
+import { useRouter } from "next/router"; // Import useRouter from Next.js
+import Link from "next/link"; // Import Link from Next.js
 import './styles.css';  // Import styles.css
 
-export default function RegisterPage() {
-  const [form, setForm] = useState({ username: "", email: "", password: "" });
+export default function LoginPage() {
+  const [form, setForm] = useState({ email: "", password: "" });
   const [message, setMessage] = useState("");
+  const router = useRouter(); // Initialize the router
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -13,7 +15,7 @@ export default function RegisterPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const res = await fetch("/api/register", {
+      const res = await fetch("/api/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
@@ -21,8 +23,9 @@ export default function RegisterPage() {
 
       const data = await res.json();
       if (res.ok) {
-        setMessage("✅ Registration successful!");
-        setForm({ username: "", email: "", password: "" });
+        setMessage("✅ Login successful!");
+        // Redirect to home page
+        router.push("/");  // This will navigate to the home page after successful login
       } else {
         setMessage("❌ Error: " + data.message);
       }
@@ -33,19 +36,9 @@ export default function RegisterPage() {
   };
 
   return (
-    <div style={{ padding: "2rem" }}>
-      <h1>Register</h1>
+    <div className="login-form">
+      <h1>Login</h1>
       <form onSubmit={handleSubmit}>
-        <div>
-          <label>Username</label>
-          <input
-            name="username"
-            placeholder="Username"
-            value={form.username}
-            onChange={handleChange}
-            required
-          />
-        </div>
         <div>
           <label>Email</label>
           <input
@@ -68,12 +61,12 @@ export default function RegisterPage() {
             required
           />
         </div>
-        <button type="submit">Register</button>
+        <button type="submit">Login</button>
       </form>
       {message && <p>{message}</p>}
 
-      {/* Link to the Login page */}
-      <p>Already have an account? <Link href="/login">Login here</Link></p>
+      {/* Link to the Register page */}
+      <p>Don't have an account? <Link href="/register">Register now</Link></p>
     </div>
   );
 }
